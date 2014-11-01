@@ -1,5 +1,7 @@
+.*
 *.un~
 *.swp
+eclipse.sbt
 tags
 target
 project/boot
@@ -7,3 +9,4 @@ project/boot
 project.vim
 *.old
 .idea
+/bin
