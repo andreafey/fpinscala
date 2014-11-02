@@ -47,19 +47,60 @@ object List { // `List` companion object. Contains functions for creating and wo
     foldRight(ns, 1.0)(_ * _) // `_ * _` is more concise notation for `(x,y) => x * y`; see sidebar
 
 
-  def tail[A](l: List[A]): List[A] = sys.error("todo")
+  def tail[A](l: List[A]): List[A] = l match {
+    case Nil => throw new Exception("tail called on Nil list")
+    case Cons(h, t) => t
+  }
 
-  def setHead[A](l: List[A], h: A): List[A] = sys.error("todo")
+  def setHead[A](l: List[A], h: A): List[A] = Cons(h, tail(l))
 
-  def drop[A](l: List[A], n: Int): List[A] = sys.error("todo")
+  def drop[A](l: List[A], n: Int): List[A] = n match {
+    case 0 => l
+    case 1 => tail(l)
+    case x => drop(tail(l), n-1)
+  }
 
-  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = sys.error("todo")
+  def dropWhile[A](l: List[A], f: A => Boolean): List[A] = l match {
+    case Nil => Nil
+    case Cons(h, t) =>
+      if (f(h)) dropWhile(t, f)
+      else l
+  }
 
-  def init[A](l: List[A]): List[A] = sys.error("todo")
+  def init[A](l: List[A]): List[A] = init(l, Nil)
 
-  def length[A](l: List[A]): Int = sys.error("todo")
+  private def init[A](l: List[A], acc: List[A]): List[A] = l match {
+    case Nil => throw new Exception("init called on Nil list")
+    case Cons(h, Nil) => acc
+    case Cons(h, t) => init(t, append(acc, Cons(h, Nil)))
+  }
 
-  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = sys.error("todo")
+  def length[A](l: List[A]): Int = foldRight(l, 0)((x, y) => 1 + y)
 
+  // ex 10
+  def foldLeft[A,B](l: List[A], z: B)(f: (B, A) => B): B = l match {
+    case Nil => z
+    case Cons(h, t) => foldLeft(t, f(z, h))(f)
+  }
+  // ex 11
+  def sum3(ns: List[Double]): Double = foldLeft(ns, 0.0)((x:Double, y) => x + y)
+  def product3(ns: List[Double]): Double = foldLeft(ns, 1.0)((x:Double, y) => x * y)
+  def length2[A](l: List[A]):Int = foldLeft(l, 0)((x:Int, y:A) => x + 1)
+
+  // ex 12
+  def reverse[A](l: List[A]): List[A] = foldLeft(l, Nil:List[A])((acc:List[A], x:A) => Cons(x, acc))
+
+  // ex 14
+  def append2[A](l1: List[A], l2: List[A]): List[A] = l1 match {
+    case Nil => l2
+    case _ => foldRight(l1, l2)((a, acc) => Cons(a, acc))
+  }
+
+  // ex 15
+  def concat[A](l: List[List[A]]): List[A] = l match {
+    case Nil => Nil
+    case Cons(h, t) => foldRight(l, Nil:List[A])((a: List[A], acc: List[A]) => append(a, acc))
+  }
+ 
   def map[A,B](l: List[A])(f: A => B): List[B] = sys.error("todo")
 }
